@@ -174,7 +174,7 @@ namespace ColumnGuide
         {
             int column = (int)line.DataContext;
 
-            line.X1 = line.X2 = _baseIndentation + 0.5 + column * _columnWidth;
+            line.X1 = line.X2 = _baseIndentation + 1 + column * _columnWidth;
             line.Y1 = _view.ViewportTop;
             line.Y2 = _view.ViewportBottom;
         }
