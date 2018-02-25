@@ -24,7 +24,6 @@ namespace ColumnGuide
         private double _columnWidth;
         private INotifyPropertyChanged _settingsChanged;
         private IEditorFormatMap _formatMap;
-        private ITelemetry _telemetry;
         private Brush _guidelineBrush;
 
         /// <summary>
@@ -33,11 +32,10 @@ namespace ColumnGuide
         /// <param name="view">The <see cref="IWpfTextView"/> upon which the adornment will be drawn</param>
         /// <param name="settings">The guideline settings.</param>
         /// <param name="editorFormatMap">The editor format map used to discover formatting options (guideline color).</param>
-        public ColumnGuide(IWpfTextView view, ITextEditorGuidesSettings settings, IEditorFormatMap editorFormatMap, ITelemetry telemetry)
+        public ColumnGuide(IWpfTextView view, ITextEditorGuidesSettings settings, IEditorFormatMap editorFormatMap)
         {
             _view = view;
             _formatMap = editorFormatMap;
-            _telemetry = telemetry;
 
             InitializeGuidelines(settings);
 
@@ -104,7 +102,6 @@ namespace ColumnGuide
                 if (value != _guidelineBrush)
                 {
                     _guidelineBrush = value;
-                    _telemetry.Client.TrackEvent("GuidelineColorChanged", new Dictionary<string, string> { ["Color"] = value.ToString() });
                     if (_guidelines != null)
                     {
                         foreach (var guideline in _guidelines)

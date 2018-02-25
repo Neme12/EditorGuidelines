@@ -17,7 +17,7 @@ namespace ColumnGuide
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class ColumnGuideAdornmentFactory : IWpfTextViewCreationListener, IPartImportsSatisfiedNotification
+    internal sealed class ColumnGuideAdornmentFactory : IWpfTextViewCreationListener
     {
         /// <summary>
         /// Defines the adornment layer for the adornment. This layer is ordered 
@@ -38,48 +38,7 @@ namespace ColumnGuide
             // Always create the adornment, even if there are no guidelines, since we
             // respond to dynamic changes.
             var formatMap = EditorFormatMapService.GetEditorFormatMap(textView);
-            new ColumnGuide(textView, TextEditorGuidesSettings, formatMap, Telemetry);
-
-            // To reduce the amount of telemetry, only report the color for the first instance.
-            if (!_colorReported)
-            {
-                _colorReported = true;
-                var brush = GetGuidelineBrushFromFontsAndColors(formatMap);
-                if (brush != null)
-                {
-                    Telemetry.Client.TrackEvent("CreateGuidelines", new Dictionary<string, string> { ["Color"] = brush.ToString() });
-                }
-            }
-        }
-
-        public void OnImportsSatisfied()
-        {
-            Telemetry.Client.TrackEvent(nameof(ColumnGuideAdornmentFactory) + " initialized");
-
-            TrackSettings("CreateGuidelines");
-            if (TextEditorGuidesSettings is INotifyPropertyChanged settingsChanged)
-            {
-                settingsChanged.PropertyChanged += OnSettingsChanged;
-            }
-        }
-
-        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ITextEditorGuidesSettings.GuideLinePositionsInChars))
-            {
-                TrackSettings("SettingsChanged");
-            }
-        }
-
-        private void TrackSettings(string eventName)
-        {
-            var telemetryProperties = new Dictionary<string, string>();
-            foreach (var column in TextEditorGuidesSettings.GuideLinePositionsInChars)
-            {
-                telemetryProperties.Add("guide" + telemetryProperties.Count.ToString(CultureInfo.InvariantCulture), column.ToString(CultureInfo.InvariantCulture));
-            }
-
-            Telemetry.Client.TrackEvent(eventName, telemetryProperties, new Dictionary<string, double> { ["Count"] = telemetryProperties.Count });
+            new ColumnGuide(textView, TextEditorGuidesSettings, formatMap);
         }
 
         internal static Brush GetGuidelineBrushFromFontsAndColors(IEditorFormatMap formatMap)
@@ -97,12 +56,7 @@ namespace ColumnGuide
         private ITextEditorGuidesSettings TextEditorGuidesSettings { get; set; }
 
         [Import]
-        private ITelemetry Telemetry { get; set; }
-
-        [Import]
         private IEditorFormatMapService EditorFormatMapService { get; set; }
-
-        private bool _colorReported;
     }
     #endregion //Adornment Factory
 }

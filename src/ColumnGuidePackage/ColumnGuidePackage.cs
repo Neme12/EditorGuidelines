@@ -53,8 +53,6 @@ namespace Microsoft.ColumnGuidePackage
         {
             base.Initialize();
 
-            Telemetry.Client.TrackEvent(nameof(ColumnGuidePackage) + "." + nameof(Initialize), new Dictionary<string, string>() { ["VSVersion"] = GetShellVersion() });
-
             // Add our command handlers for menu (commands must exist in the .vsct file)
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
@@ -125,7 +123,6 @@ namespace Microsoft.ColumnGuidePackage
                 if (!int.TryParse(inValue, out column) || column < 0)
                     throw new ArgumentException("Invalid column");
 
-                Telemetry.Client.TrackEvent("Command parameter used");
                 return column;
             }
 
@@ -142,7 +139,6 @@ namespace Microsoft.ColumnGuidePackage
             int column = GetApplicableColumn(e);
             if (column >= 0)
             {
-                Telemetry.Client.TrackEvent(nameof(AddColumnGuideExecuted), new Dictionary<string, string>() { ["Column"] = column.ToString() });
                 TextEditorGuidesSettingsRendezvous.Instance.AddGuideline(column);
             }
         }
@@ -152,14 +148,12 @@ namespace Microsoft.ColumnGuidePackage
             int column = GetApplicableColumn(e);
             if (column >= 0)
             {
-                Telemetry.Client.TrackEvent(nameof(RemoveColumnGuideExecuted), new Dictionary<string, string>() { ["Column"] = column.ToString() });
                 TextEditorGuidesSettingsRendezvous.Instance.RemoveGuideline(column);
             }
         }
 
         private void RemoveAllGuidelinesExecuted(object sender, EventArgs e)
         {
-            Telemetry.Client.TrackEvent(nameof(RemoveAllGuidelinesExecuted));
             TextEditorGuidesSettingsRendezvous.Instance.RemoveAllGuidelines();
         }
 
