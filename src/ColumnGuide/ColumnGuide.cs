@@ -15,7 +15,7 @@ namespace ColumnGuide
     /// </summary>
     class ColumnGuide
     {
-        private const double _lineThickness = 1.0;
+        private const double _lineThickness = 2.0;
 
         private IList<Line> _guidelines;
         private IWpfTextView _view;
@@ -153,7 +153,6 @@ namespace ColumnGuide
         private IList<Line> CreateGuidelines(ITextEditorGuidesSettings settings)
         {
             var lineBrush = GuidelineBrush;
-            var dashArray = new DoubleCollection(new double[] { 1.0, 3.0 });
             var result = new List<Line>();
 
             foreach (int column in settings.GuideLinePositionsInChars)
@@ -163,7 +162,6 @@ namespace ColumnGuide
                     DataContext = column,
                     Stroke = lineBrush,
                     StrokeThickness = _lineThickness,
-                    StrokeDashArray = dashArray
                 };
 
                 result.Add(line);
